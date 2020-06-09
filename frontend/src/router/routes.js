@@ -7,6 +7,9 @@ import Company from '../pages/Company.vue'
 import Contact from '../pages/Contact.vue'
 import Login from '../pages/Login.vue'
 
+
+import Calendar from '../pages/TimeEntries/Calendar.vue'
+
 const routes = [
   {
     path: '/',
@@ -15,6 +18,10 @@ const routes = [
       {
         path: '/',
         component: Home
+      },
+      {
+        path: '/zeitdaten',
+        component: Calendar
       },
       {
         path: '/products',

@@ -1,10 +1,10 @@
 <template>
   <div class="q-pa-md">
-    <q-layout view="lHh Lpr lff">
+    <q-layout view="lHh Lpr lff" style="min-height: 800px">
       <q-header elevated class="bg-cyan-8">
         <q-toolbar>
           <q-toolbar-title>Apex Energie</q-toolbar-title>
-          <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
+          <q-btn flat @click="drawer = !drawer" round dense icon="menu"/>
         </q-toolbar>
       </q-header>
 
@@ -16,43 +16,44 @@
             <q-item-label header>Mitarbeiter Bereich</q-item-label>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="dashboard" />
+                <q-icon name="dashboard"/>
               </q-item-section>
 
               <q-item-section>Dashboard</q-item-section>
             </q-item>
 
-            <q-item active clickable v-ripple>
+            <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="notification_important" />
+                <q-icon name="notification_important"/>
               </q-item-section>
 
               <q-item-section>Störungen</q-item-section>
             </q-item>
-            <q-item clickable v-ripple>
+            <q-item to="/zeitdaten" clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="access_time" />
+                <q-icon name="access_time"/>
               </q-item-section>
 
               <q-item-section>Zeitdaten</q-item-section>
+
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="timeline" />
+                <q-icon name="timeline"/>
               </q-item-section>
 
               <q-item-section>Salden</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="people" />
+                <q-icon name="people"/>
               </q-item-section>
 
               <q-item-section>Kunden</q-item-section>
             </q-item>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="apartment" />
+                <q-icon name="apartment"/>
               </q-item-section>
 
               <q-item-section>Baustellen</q-item-section>
@@ -60,16 +61,16 @@
 
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="build" />
+                <q-icon name="build"/>
               </q-item-section>
 
               <q-item-section>Bauvorhaben</q-item-section>
             </q-item>
-            <q-separator spaced />
+            <q-separator spaced/>
             <q-item-label header>Admin Bereich</q-item-label>
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="library_books" />
+                <q-icon name="library_books"/>
               </q-item-section>
 
               <q-item-section>Verträge</q-item-section>
@@ -77,7 +78,7 @@
 
             <q-item clickable v-ripple>
               <q-item-section avatar>
-                <q-icon name="flight_takeoff" />
+                <q-icon name="flight_takeoff"/>
               </q-item-section>
 
               <q-item-section>Feiertage</q-item-section>
@@ -92,10 +93,12 @@
         >
           <div class="absolute-bottom bg-transparent">
             <q-avatar size="56px" class="q-mb-sm">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png"/>
             </q-avatar>
             <div class="text-weight-bold">Tom Marienfeld</div>
-            <div><q-btn v-if="$store.getters['auth/isLoggedIn']" @click="logout" color="negative">Logout</q-btn></div>
+            <div>
+              <q-btn v-if="$store.getters['auth/isLoggedIn']" @click="logout" color="negative">Logout</q-btn>
+            </div>
           </div>
         </q-img>
       </q-drawer>
@@ -109,38 +112,31 @@
 </template>
 
 <script>
-  import Swal from 'sweetalert2'
-  Swal.fire({
-    title: 'Yeah!',
-    text: 'Willkommen auf meiner coolen Seite!',
-    icon: 'success',
-    confirmButtonText: 'Cool'
-  })
   export default {
-    data () {
+    data() {
       return {
-          drawer: true
+        drawer: true
       }
     },
-  mounted () {
-    this.$http.all([
-      this.$http.get('/products'),
-      this.$http.get('/companies')
-    ])
-      .then(this.$http.spread(function (products, companies) {
-        this.products = products.data
-        this.companies = companies.data
-      }.bind(this)))
-      .catch(() => this.hasAPIError = true)
-      .then(() => this.isLoading = false)
-  },
+    mounted() {
+      this.$http.all([
+        this.$http.get('/products'),
+        this.$http.get('/companies')
+      ])
+        .then(this.$http.spread(function (products, companies) {
+          this.products = products.data
+          this.companies = companies.data
+        }.bind(this)))
+        .catch(() => this.hasAPIError = true)
+        .then(() => this.isLoading = false)
+    },
     methods: {
-     logout: function(){
+      logout: function () {
         this.$store.dispatch('auth/logout')
           .then(() => {
             this.$router.push('/login')
           })
       }
     }
-}
+  }
 </script>
