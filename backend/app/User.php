@@ -30,4 +30,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    public function timeEntries()
+    {
+        return $this->hasMany('App\TimeEntry');
+    }
 }

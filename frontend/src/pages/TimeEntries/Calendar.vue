@@ -15,7 +15,9 @@
     right: 'newEvent',
   }"
     editable="true"
-    :events='[{"id":28,"start":"2020-06-10 10:45:00","end":"2020-06-10 14:45:00","title":"Heizungsanlage Schwimmbad Meldorf"},{"id":29,"start":"2020-06-11 11:45:00","end":"2020-06-11 16:30:00","title":"B\u00e4dtker"},{"id":30,"start":"2020-06-08 10:15:00","end":"2020-06-08 14:45:00","title":"Heizungsanlage Schwimmbad Meldorf"},{"id":31,"start":"2020-06-09 12:00:00","end":"2020-06-09 16:00:00","title":"Vaillant Heizungsanlage"}]'
+    :events="function(info, successCallback, failureCallback) {
+      getEvents(info, successCallback, failureCallback);
+    }"
     :views="{
         timeGridWeek: {
           type: 'timeGrid',
@@ -61,6 +63,15 @@
       }
     },
     methods: {
+      getEvents: function(info, successCallback, failureCallback) {
+        this.$http.get('user/time-entries',  {
+          params: {
+            start: info.start,
+            end: info.end
+          }}).then(response => {
+          successCallback(response.data)
+        })
+      },
       updateEvent: function (info) {
         const start = new Date(info.event.start).getDate();
         const end = new Date(info.event.end).getDate();

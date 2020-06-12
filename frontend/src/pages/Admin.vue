@@ -18,6 +18,7 @@
       return {
         drawer: false,
         selected: [],
+        events: [],
         columns: [
           {
             name: 'id',
@@ -60,18 +61,6 @@
           }
         ]
       }
-    },
-    mounted() {
-      this.$http
-        .post('/private/contacts')
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logout')
-              .then(() => {
-                this.$router.push('/login')
-              })
-          }
-        })
     }
   }
 </script>

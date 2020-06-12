@@ -33,7 +33,18 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 });
 
 
-$router->group(['prefix' => 'api/private', 'middleware' => 'client'], function () use ($router) {
-    //Contact Form
-    $router->post('contacts', ['uses' => 'ContactController@showAll']);
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+
+    //Time Entries
+    $router->get('time-entries', ['uses' => 'TimeEntryController@index']);
+    $router->get('time-entries/{id}', ['uses' => 'TimeEntryController@show']);
+    $router->post('time-entries', ['uses' => 'TimeEntryController@store']);
+    $router->patch('time-entries', ['uses' => 'TimeEntryController@update']);
+    $router->delete('time-entries', ['uses' => 'TimeEntryController@destroy']);
+
+    $router->get('user/time-entries', ['uses' => 'TimeEntryController@indexOwned']);
+});
+
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
+    $router->get('user/time-entriess', ['uses' => 'TimeEntryController@indexOwned']);
 });

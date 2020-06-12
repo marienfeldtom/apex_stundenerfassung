@@ -13,18 +13,6 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(Client::class, function (Faker $faker) {
-    return [
-        'user_id' => null,
-        'name' => $faker->company,
-        'secret' => Str::random(40),
-        'redirect' => $faker->url,
-        'personal_access_client' => 0,
-        'password_client' => 0,
-        'revoked' => 0,
-    ];
-});
-
 $factory->define(App\Company::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
@@ -34,9 +22,10 @@ $factory->define(App\Company::class, function (Faker\Generator $faker) {
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => app('hash')->make(Str::random(10))
+        'id' => '1',
+        'name' => "John Doe",
+        'email' => "test@test.de",
+        'password' => app('hash')->make("test")
     ];
 });
 
