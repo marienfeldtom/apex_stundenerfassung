@@ -15,16 +15,4 @@ class TimeEntryService {
         } catch (\Exception $e) {
         }
     }
-
-    static function mapTimeEntries(Collection $timeEntries){
-        return $timeEntries->map(function ($item, $key) {
-              $merge1 = \App\Services\TimeEntryService::combineDateAndTime($item->date,$item->time_from);
-              $merge2 = TimeEntryService::combineDateAndTime($item->date,$item->time_to);
-              $data["id"] = $item->id;
-              $data["start"] = $merge1->format('Y-m-d H:i:s');
-              $data["end"] = $merge2->format('Y-m-d H:i:s');
-              $data["title"] = "Test";  // $item->project->name
-              return $data;
-          });
-    }
 }
