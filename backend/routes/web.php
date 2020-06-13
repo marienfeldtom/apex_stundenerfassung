@@ -44,7 +44,3 @@ $router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($ro
 
     $router->get('user/time-entries', ['uses' => 'TimeEntryController@indexOwned']);
 });
-
-$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
-    $router->get('user/time-entriess', ['uses' => 'TimeEntryController@indexOwned']);
-});

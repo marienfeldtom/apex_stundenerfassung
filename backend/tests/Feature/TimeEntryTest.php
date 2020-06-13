@@ -45,11 +45,13 @@ class TimeEntryTest extends TestCase
         Passport::actingAs(factory(App\User::class)->make());
         $response = $this->get('api/time-entries/1');
         $response->assertStatus(200);
-        $response->seeJsonStructure([
-            "end",
-            'id',
+        $response->seeJsonStructure(['data' => [
+            "id",
             'start',
-            'title'
-        ]);
+            'end',
+            'title',
+            'created_at',
+            'updated_at'
+        ]]);
     }
 }

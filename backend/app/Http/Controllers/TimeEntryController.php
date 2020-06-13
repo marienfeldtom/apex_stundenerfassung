@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Services\TimeEntryService;
 use App\TimeEntry;
 use App\User;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use DateTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\TimeEntry as TimeEntryResource;
+use Illuminate\Validation\ValidationException;
 
 class TimeEntryController extends Controller
 {
@@ -32,41 +34,27 @@ class TimeEntryController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'project_id' => 'required',
-            'time_from' => 'required',
-            'time_to' => 'required',
-            'date' => 'required'
-        ]);
-        $startTime = $request->time_from;
-        $endTime = $request->time_to;
-        $date = $request->date;
 
-        $eventsCount = auth()->user()->timeEntries()->where(function ($query) use ($startTime, $endTime, $date) {
-            $query->where(function ($query) use ($startTime, $endTime, $date) {
-                $query->where('time_from', '>=', $startTime)
-                    ->where('time_to', '<', $startTime)
-                    ->whereDate('date', '=', date_create_from_format("d.m.Y", $date));
-            })
-                ->orWhere(function ($query) use ($startTime, $endTime, $date) {
-                    $query->where('time_from', '<', $endTime)
-                        ->where('time_to', '>=', $endTime)
-                        ->whereDate('date', '=', date_create_from_format("d.m.Y", $date));
-                });
-        })->count();
+        try {
+            $this->validate($request, [
+                'project_id' => 'required',
+                'time_from' => 'required',
+                'time_to' => 'required|greater_than_field:time_from',
+                'date' => 'required'
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e.response], 400);
+        }
 
         if ($request->time_to <= $request->time_from) {
             return response()->json(['message' => 'Die Endzeit darf nicht vor der Startzeit liegen!'], 400);
         }
 
+        $eventsCount = TimeEntryService::countTimeEntriesAtTimeFromLoggedInUser($request->time_from, $request->time_to, $request->date);
+
         if ($eventsCount > 0) {
             return response()->json(['message' => 'Zu dieser Zeit ist bereits ein Eintrag vorhanden!'], 400);
         }
-
-        if ($validator->fails()) {
-            return response()->json(['message' => 'Es gab einen Fehler bei der Validierung!'], 400);
-        }
-
 
         $time_entry = TimeEntry::create([
             'project_id' => $request->project_id,
@@ -89,18 +77,10 @@ class TimeEntryController extends Controller
     {
         $timeEntry = TimeEntry::find($id);
 
-        if ( $timeEntry->id == auth()->user()->id ) {
-            $merge1 = new DateTime(Carbon::parse($timeEntry->date)->format('Y-m-d') . ' ' . Carbon::parse($timeEntry->time_from)->format('H:i:s'));
-            $merge2 = new DateTime(Carbon::parse($timeEntry->date)->format('Y-m-d') . ' ' . Carbon::parse($timeEntry->time_to)->format('H:i:s'));
-            $timeEntry["id"] = $timeEntry->id;
-            $timeEntry["start"] = $merge1->format('Y-m-d H:i:s');
-            $timeEntry["end"] = $merge2->format('Y-m-d H:i:s');
-            $timeEntry["title"] = "Test";  // $item->project->name
-            return $timeEntry;
+        if ( $timeEntry->user_id == auth()->user()->id ) {
+            return new TimeEntryResource($timeEntry);
         }
-
         return response()->json(['message' => 'Zugriff auf diese Ressource verweigert!'], 403);
-
     }
 
     public function update(Request $request, $id)
