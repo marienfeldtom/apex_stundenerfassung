@@ -8,6 +8,7 @@ use Auth;
 use DateTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\TimeEntry as TimeEntryResource;
 
 class TimeEntryController extends Controller
 {
@@ -25,21 +26,8 @@ class TimeEntryController extends Controller
 
     public function indexOwned(Request $request)
     {
-        $start = Carbon::parse($request->start);
-        $end = Carbon::parse($request->end);
-        $timeEntries = $this->user->timeEntries()->whereBetween('date', [$start, $end])->get();
-        $mappedTimeEntries = $timeEntries->map(function ($item, $key) {
-
-            $merge1 = new DateTime(Carbon::parse($item->date)->format('Y-m-d') . ' ' . Carbon::parse($item->time_from)->format('H:i:s'));
-            $merge2 = new DateTime(Carbon::parse($item->date)->format('Y-m-d') . ' ' . Carbon::parse($item->time_to)->format('H:i:s'));
-            $data["id"] = $item->id;
-            $data["start"] = $merge1->format('Y-m-d H:i:s');
-            $data["end"] = $merge2->format('Y-m-d H:i:s');
-            $data["title"] = "Test";  // $item->project->name
-            return $data;
-        });
-
-        return $mappedTimeEntries;
+        $timeEntries = $this->user->timeEntries()->whereBetween('date', [Carbon::parse($request->start), Carbon::parse($request->end)])->get();
+        return TimeEntryResource::collection($timeEntries);
     }
 
     public function store(Request $request)

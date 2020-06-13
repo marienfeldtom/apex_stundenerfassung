@@ -31,12 +31,14 @@ class TimeEntryTest extends TestCase
         $weekEndDate = Carbon::now()->endOfWeek()->format('Y-m-d H:i');
         $response = $this->get('api/user/time-entries?start='. $weekStartDate .'&end='. $weekEndDate .'');
         $response->assertStatus(200);
-        $response->seeJsonStructure([[
-            "end",
-            'id',
+        $response->seeJsonStructure(['data' => [[
+            "id",
             'start',
-            'title'
-            ]]);
+            'end',
+            'title',
+            'created_at',
+            'updated_at'
+        ]]]);
     }
     public function testGetTimeEntryById()
     {
